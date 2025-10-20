@@ -1,15 +1,16 @@
 name: Simulação de Pipeline
 
 on:
-  workflow_dispatch:  # Permite rodar manualmente
+  workflow_dispatch:  
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout do código
-        uses: actions/checkout@v4
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
 
-      - name: Exemplo simples
-        run: echo "🚀 Pipeline rodando com sucesso no GitHub Actions!"
+      - name: Forçando um Erro Proposital
+        # ESTA LINHA VAI FALHAR A EXECUÇÃO DO JOB
+        run: exit 1
