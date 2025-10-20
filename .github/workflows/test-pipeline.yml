@@ -1,4 +1,4 @@
-name: Simulação de Erro de Sintaxe YAML
+name: Pipeline com Erro Real de Configuração
 
 on:
   workflow_dispatch:
@@ -8,11 +8,44 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Step OK
-        run: echo "Início da execução."
-        
-      - name: Step com Erro de Sintaxe
-        run: echo "Tentando executar comando..."
-        # Linha propositalmente mal indentada (muito para a esquerda)
-        - name: Este Step NÃO Deveria Ter Nome
-          run: echo "Este bloco está mal formado e vai falhar o parser."
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Preparação
+        run: echo "Iniciando verificação do arquivo de configuração..."
+
+      - name: Verificar arquivo de configuração
+        id: check_config
+        run: |
+          TIMESTAMP="$(date --iso-8601=seconds)"
+          LOGFILE=logs/config_error.log
+          JSONFILE=logs/config_error.json
+
+          mkdir -p logs
+
+          CONFIG_FILE="config.yml"
+
+          # Tenta ler o arquivo de configuração
+          if [ ! -f "$CONFIG_FILE" ]; then
+            echo "ERRO CRÍTICO: Arquivo de configuração '$CONFIG_FILE' não encontrado." >&2
+
+            # JSON estruturado para IA
+            cat > "$JSONFILE" <<EOF
+{
+  "timestamp": "$TIMESTAMP",
+  "error_type": "missing_file",
+  "file": "$CONFIG_FILE",
+  "exit_code": 1,
+  "message": "Arquivo de configuração obrigatório ausente.",
+  "suggestion": "Adicionar '$CONFIG_FILE' no repositório ou no caminho correto antes de rodar a pipeline."
+}
+EOF
+
+            echo "[$TIMESTAMP] CRITICAL: $CONFIG_FILE missing" > "$LOGFILE"
+            exit 1
+          fi
+
+          echo "Arquivo de configuração encontrado, continuando..."
+
+      - name: Step não alcançada
+        run: echo "Este step não será executado se o config.yml estiver ausente."
