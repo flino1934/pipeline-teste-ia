@@ -1,7 +1,7 @@
-name: Pipeline com Erro Real de Configuração
+name: Simulação de Pipeline com Log
 
 on:
-  workflow_dispatch:
+  workflow_dispatch: # Permite rodar manualmente
 
 jobs:
   build:
@@ -11,41 +11,17 @@ jobs:
       - name: Checkout do código
         uses: actions/checkout@v4
 
-      - name: Preparação
-        run: echo "Iniciando verificação do arquivo de configuração..."
+      - name: 1. Step de Preparação
+        run: echo "Iniciando verificação de dependências..."
+        
+      - name: 2. Step que Falha e Gera Log
+        # | representa um bloco de comando multi-linha
+        run: | 
+          # 1. Mensagem de erro que será vista no log do GitHub
+          echo "ERRO CRÍTICO: Falha na validação de formato. O arquivo de configuração está ausente." >&2
+          
+          # 2. Comando que força a falha (exit 1)
+          exit 1 
 
-      - name: Verificar arquivo de configuração
-        id: check_config
-        run: |
-          TIMESTAMP="$(date --iso-8601=seconds)"
-          LOGFILE=logs/config_error.log
-          JSONFILE=logs/config_error.json
-
-          mkdir -p logs
-
-          CONFIG_FILE="config.yml"
-
-          # Tenta ler o arquivo de configuração
-          if [ ! -f "$CONFIG_FILE" ]; then
-            echo "ERRO CRÍTICO: Arquivo de configuração '$CONFIG_FILE' não encontrado." >&2
-
-            # JSON estruturado para IA
-            cat > "$JSONFILE" <<EOF
-{
-  "timestamp": "$TIMESTAMP",
-  "error_type": "missing_file",
-  "file": "$CONFIG_FILE",
-  "exit_code": 1,
-  "message": "Arquivo de configuração obrigatório ausente.",
-  "suggestion": "Adicionar '$CONFIG_FILE' no repositório ou no caminho correto antes de rodar a pipeline."
-}
-EOF
-
-            echo "[$TIMESTAMP] CRITICAL: $CONFIG_FILE missing" > "$LOGFILE"
-            exit 1
-          fi
-
-          echo "Arquivo de configuração encontrado, continuando..."
-
-      - name: Step não alcançada
-        run: echo "Este step não será executado se o config.yml estiver ausente."
+      - name: 3. Step que Não Roda
+        run: echo "Este step não será alcançado."
