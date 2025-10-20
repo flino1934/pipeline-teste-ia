@@ -1,4 +1,4 @@
-name: Simulação de Pipeline com Log
+name: Simulação de Erro - Variavel Ausente
 
 on:
   workflow_dispatch: # Permite rodar manualmente
@@ -11,17 +11,12 @@ jobs:
       - name: Checkout do código
         uses: actions/checkout@v4
 
-      - name: 1. Step de Preparação
-        run: echo "Iniciando verificação de dependências..."
-        
-      - name: 2. Step que Falha e Gera Log
-        # | representa um bloco de comando multi-linha
-        run: | 
-          # 1. Mensagem de erro que será vista no log do GitHub
-          echo "ERRO CRÍTICO: Falha na validação de formato. O arquivo de configuração está ausente." >&2
-          
-          # 2. Comando que força a falha (exit 1)
-          exit 1 
-
-      - name: 3. Step que Não Roda
-        run: echo "Este step não será alcançado."
+      - name: Verificar Variável de Ambiente
+        # Tenta usar uma variável de ambiente que não foi definida.
+        # O comando `grep` falhará, e o `exit 1` garantirá a falha do step.
+        run: |
+          if [ -z "$API_KEY_SECRETA" ]; then
+            echo "ERRO CRÍTICO DE CONFIGURAÇÃO: A variável API_KEY_SECRETA está vazia ou não foi definida." >&2
+            exit 1
+          fi
+          echo "Variável API_KEY_SECRETA carregada com sucesso."
