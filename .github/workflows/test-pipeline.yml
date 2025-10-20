@@ -1,16 +1,22 @@
 name: Simulação de Pipeline
 
 on:
-  workflow_dispatch:  
+  workflow_dispatch: # Permite rodar manualmente
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout do código
-        uses: actions/checkout@v4
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
 
-      - name: Forçando um Erro Proposital
-        # ESTA LINHA VAI FALHAR A EXECUÇÃO DO JOB
-        run: exit 1
+      - name: 1. Step que Passa (Verificação Inicial)
+        run: echo "Passou pelo step inicial com sucesso."
+        
+      - name: 2. Step que Vai Falhar Propositalmente
+        # Este comando retorna código de saída 1, o que marca o step como falha.
+        run: exit 1
+
+      - name: 3. Step que Será Ignorado (Não será executado após a falha)
+        run: echo "Este step não será alcançado."
