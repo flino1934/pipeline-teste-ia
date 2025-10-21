@@ -1,4 +1,4 @@
-name: Simulação de Erro - Variavel Ausente
+name: Simulação de Sucesso - Variavel Presente
 
 on:
   workflow_dispatch: # Permite rodar manualmente
@@ -6,17 +6,23 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    
+    # 🚨 NOVIDADE: Definindo a variável de ambiente para todo o Job
+    env:
+      API_KEY_SECRETA: ${{ secrets.API_KEY_SECRETA }} 
 
     steps:
       - name: Checkout do código
         uses: actions/checkout@v4
 
       - name: Verificar Variável de Ambiente
-        # Tenta usar uma variável de ambiente que não foi definida.
-        # O comando `grep` falhará, e o `exit 1` garantirá a falha do step.
+        # Este step agora VAI PASSAR porque a variável API_KEY_SECRETA
+        # será injetada a partir dos Secrets (se estiver configurada).
         run: |
           if [ -z "$API_KEY_SECRETA" ]; then
             echo "ERRO CRÍTICO DE CONFIGURAÇÃO: A variável API_KEY_SECRETA está vazia ou não foi definida." >&2
             exit 1
           fi
-          echo "Variável API_KEY_SECRETA carregada com sucesso."
+          echo "✅ Variável API_KEY_SECRETA carregada com sucesso!"
+          # Simula uma ação bem-sucedida
+          echo "Processo de autenticação concluído."
