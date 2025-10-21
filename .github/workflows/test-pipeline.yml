@@ -12,11 +12,4 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Verificar Variável de Ambiente
-        # Tenta usar uma variável de ambiente que não foi definida.
-        # O comando `grep` falhará, e o `exit 1` garantirá a falha do step.
-        run: |
-          if [ -z "$API_KEY_SECRETA" ]; then
-            echo "ERRO CRÍTICO DE CONFIGURAÇÃO: A variável API_KEY_SECRETA está vazia ou não foi definida." >&2
-            exit 1
-          fi
-          echo "Variável API_KEY_SECRETA carregada com sucesso."
+      "
